@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math/rand/v2"
 	"os"
 )
 
@@ -16,20 +17,23 @@ func OpenDictionary(filePath string) (*os.File, error) {
 }
 
 // count the number of words whose length is between minLen and maxLen
-func GetWordCount(file *os.File, minLen, maxLen int) int {
+func GetMatchingWords(file *os.File, minLen, maxLen int) []string {
 	scanner := bufio.NewScanner(file)
-	var lineCount int
+	var words []string
 
 	for scanner.Scan() {
 		// Scanner.Text() automatically strips the newline character (\n),
 		line := scanner.Text()
 		if len(line) >= minLen && len(line) <= maxLen {
-			lineCount++
-			fmt.Println(line)
+			words = append(words, line)
 		}
 	}
 
-	return lineCount
+	return words
+}
+
+func GetRandomWord(words []string) string {
+	return words[rand.IntN(len(words))]
 }
 
 func main() {
@@ -39,9 +43,9 @@ func main() {
 	}
 	defer file.Close()
 
-	lineCount := GetWordCount(file, 3, 12)
+	word := GetRandomWord(GetMatchingWords(file, 3, 10))
 
-	fmt.Printf("line count: %d\n", lineCount)
+	fmt.Printf("chosen word: %s\n", word)
 	// guess_count := 6
 	// for i := 0; i < guess_count; i++ {
 	// 	fmt.Println("Guess the next letter:")
