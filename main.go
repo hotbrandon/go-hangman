@@ -17,7 +17,7 @@ func OpenDictionary(filePath string) (*os.File, error) {
 	return file, nil
 }
 
-// count the number of words whose length is between minLen and maxLen
+// return a slice of words whose length is between minLen and maxLen from the input file
 func GetMatchingWords(file *os.File, minLen, maxLen int) []string {
 	scanner := bufio.NewScanner(file)
 	var words []string
@@ -67,9 +67,11 @@ func main() {
 	}
 	defer file.Close()
 
+	word_list := GetMatchingWords(file, 3, 10)
 	for {
-		chosenWord := GetRandomWord(GetMatchingWords(file, 3, 10))
-		max_guess_count := len(chosenWord) * 2
+		chosenWord := GetRandomWord(word_list)
+		max_guess_count := len(chosenWord)
+		fmt.Printf("max try %d, enter a letter or 'quit' to exit.\n", max_guess_count)
 		guessed_word := GetInitialWord(chosenWord)
 		for i := 0; i < max_guess_count; i++ {
 			fmt.Printf("word: %s\n", guessed_word)
@@ -77,9 +79,18 @@ func main() {
 			reader := bufio.NewReader(os.Stdin)
 
 			input, _ := reader.ReadString('\n')
-			letter := strings.TrimSpace(input)
+			trimmed_input := strings.TrimSpace(input)
 
-			fmt.Println(letter)
+			if trimmed_input == "quit" {
+				fmt.Println("good bye!")
+				os.Exit(0)
+			}
+
+			if !CheckValidAlphabet(rune(trimmed_input[0])) {
+				fmt.Println("invalid alphabet, please use 'A' - 'Z' or 'a' - 'z'")
+				continue
+			}
+			fmt.Println(trimmed_input)
 		}
 	}
 
