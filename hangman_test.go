@@ -26,3 +26,38 @@ func TestOpenDictionary(t *testing.T) {
 
 	})
 }
+
+func TestCheckValidAlphabet(t *testing.T) {
+	t.Run("check valid alphabets", func(t *testing.T) {
+		want := true
+		got := CheckValidAlphabet('A')
+		if want != got {
+			t.Errorf("want %v, got %v", want, got)
+		}
+	})
+	t.Run("check invalid alphabets", func(t *testing.T) {
+		tests := []struct {
+			name  string
+			input rune
+			want  bool
+		}{
+			{"uppercase letter", 'A', true},
+			{"lowercase letter", 'z', true},
+			{"boundary upper A", 'A', true},
+			{"boundary upper Z", 'Z', true},
+			{"boundary lower a", 'a', true},
+			{"boundary lower z", 'z', true},
+			{"digit", '1', false},
+			{"special character", '!', false},
+			{"space", ' ', false},
+			{"non-ASCII letter", 'é', false}, // clarifies ASCII-only intent
+		}
+
+		for _, test := range tests {
+			got := CheckValidAlphabet(test.input)
+			if got != test.want {
+				t.Errorf("CheckValidAlphabet(%q), got %v, want %v", test.input, got, test.want)
+			}
+		}
+	})
+}

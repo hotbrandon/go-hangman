@@ -30,6 +30,11 @@ func GetMatchingWords(file *os.File, minLen, maxLen int) []string {
 		}
 	}
 
+	if scanner.Err() != nil {
+		fmt.Println(scanner.Err().Error())
+		return nil
+	}
+
 	return words
 }
 
@@ -51,6 +56,10 @@ func GetInitialWord(word string) string {
 	return string(runes)
 }
 
+func CheckValidAlphabet(c rune) bool {
+	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
+}
+
 func main() {
 	file, err := OpenDictionary("words_alpha.txt")
 	if err != nil {
@@ -60,9 +69,9 @@ func main() {
 
 	for {
 		chosenWord := GetRandomWord(GetMatchingWords(file, 3, 10))
-		guess_count := len(chosenWord) * 2
+		max_guess_count := len(chosenWord) * 2
 		guessed_word := GetInitialWord(chosenWord)
-		for i := 0; i < guess_count; i++ {
+		for i := 0; i < max_guess_count; i++ {
 			fmt.Printf("word: %s\n", guessed_word)
 			fmt.Println("Guess the next letter:")
 			reader := bufio.NewReader(os.Stdin)
