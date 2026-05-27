@@ -1,6 +1,7 @@
 package main
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -60,4 +61,14 @@ func TestCheckValidAlphabet(t *testing.T) {
 			}
 		}
 	})
+}
+
+func TestFindLetterPosition(t *testing.T) {
+	word := "lollipop"
+	got := findLetterPosition('l', word)
+	want := []int{0, 2, 3}
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v, want %v", got, want)
+	}
 }

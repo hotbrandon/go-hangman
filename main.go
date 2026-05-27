@@ -60,6 +60,17 @@ func CheckValidAlphabet(c rune) bool {
 	return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
 }
 
+func findLetterPosition(letter rune, word string) []int {
+	var indexes []int
+	for idx, char := range word {
+		if letter == char {
+			indexes = append(indexes, idx)
+			fmt.Printf("found at index %d, letter %c\n", idx, char)
+		}
+	}
+	return indexes
+}
+
 func main() {
 	file, err := OpenDictionary("words_alpha.txt")
 	if err != nil {
@@ -70,27 +81,29 @@ func main() {
 	word_list := GetMatchingWords(file, 3, 10)
 	for {
 		chosenWord := GetRandomWord(word_list)
-		max_guess_count := len(chosenWord)
-		fmt.Printf("max try %d, enter a letter or 'quit' to exit.\n", max_guess_count)
+		maxGuessCount := len(chosenWord)
+		fmt.Printf("max try %d, enter a letter or 'quit' to exit.\n", maxGuessCount)
 		guessed_word := GetInitialWord(chosenWord)
-		for i := 0; i < max_guess_count; i++ {
+		for i := 0; i < maxGuessCount; i++ {
 			fmt.Printf("word: %s\n", guessed_word)
 			fmt.Println("Guess the next letter:")
 			reader := bufio.NewReader(os.Stdin)
 
 			input, _ := reader.ReadString('\n')
-			trimmed_input := strings.TrimSpace(input)
+			trimmedInput := strings.TrimSpace(input)
 
-			if trimmed_input == "quit" {
+			if trimmedInput == "quit" {
 				fmt.Println("good bye!")
 				os.Exit(0)
 			}
 
-			if !CheckValidAlphabet(rune(trimmed_input[0])) {
+			if !CheckValidAlphabet(rune(trimmedInput[0])) {
 				fmt.Println("invalid alphabet, please use 'A' - 'Z' or 'a' - 'z'")
 				continue
 			}
-			fmt.Println(trimmed_input)
+
+			// find the letter in chosenWord, and return the position(s).
+
 		}
 	}
 
