@@ -71,6 +71,14 @@ func findLetterPosition(letter rune, word string) []int {
 	return indexes
 }
 
+func fillinLetter(guessedWord string, letter rune, positions []int) string {
+	runes := []rune(guessedWord)
+	for _, pos := range positions {
+		runes[pos] = letter
+	}
+	return string(runes)
+}
+
 func main() {
 	file, err := OpenDictionary("words_alpha.txt")
 	if err != nil {
@@ -103,7 +111,17 @@ func main() {
 			}
 
 			// find the letter in chosenWord, and return the position(s).
+			positions := findLetterPosition(rune(trimmedInput[0]), chosenWord)
+			guessed_word = fillinLetter(guessed_word, rune(trimmedInput[0]), positions)
 
+			if guessed_word == chosenWord {
+				fmt.Printf("Congratulations! You guessed the word: %s\n\n", chosenWord)
+				break
+			}
+			fmt.Printf("you have %d tries left.\n", maxGuessCount-i-1)
+			if i == maxGuessCount-1 {
+				fmt.Printf("Game over! The word was: %s\n\n", chosenWord)
+			}
 		}
 	}
 
