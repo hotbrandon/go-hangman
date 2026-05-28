@@ -93,8 +93,11 @@ func main() {
 		maxGuessCount := len(chosenWord)
 		fmt.Printf("max try %d, enter a letter or 'quit' to exit.\n", maxGuessCount)
 		guessed_word := GetInitialWord(chosenWord)
+		guessed_letters := make(map[rune]bool)
+
 		for i := 0; i < maxGuessCount; i++ {
 			fmt.Printf("word: %s\n", guessed_word)
+			fmt.Printf("you have %d tries left.\n", maxGuessCount-i)
 			fmt.Println("Guess the next letter:")
 			reader := bufio.NewReader(os.Stdin)
 
@@ -114,6 +117,11 @@ func main() {
 				fmt.Println("invalid alphabet, please use 'A' - 'Z' or 'a' - 'z'")
 				continue
 			}
+			guessed_letter := rune(trimmedInput[0])
+			if guessed_letters[guessed_letter] {
+				fmt.Printf("you have already guessed the letter %c.\n", guessed_letter)
+			}
+			guessed_letters[guessed_letter] = true
 
 			// find the letter in chosenWord, and return the position(s).
 			positions := findLetterPosition(rune(trimmedInput[0]), chosenWord)
@@ -123,7 +131,12 @@ func main() {
 				fmt.Printf("Congratulations! You guessed the word: %s\n\n", chosenWord)
 				break
 			}
-			fmt.Printf("you have %d tries left.\n", maxGuessCount-i-1)
+
+			fmt.Println("guessed letters: ")
+			for c := range guessed_letters {
+				fmt.Printf("%c ", c)
+			}
+			fmt.Println()
 			if i == maxGuessCount-1 {
 				fmt.Printf("Game over! The word was: %s\n\n", chosenWord)
 			}
