@@ -104,6 +104,10 @@ func main() {
 				fmt.Println("good bye!")
 				os.Exit(0)
 			}
+			if len(trimmedInput) == 0 {
+				fmt.Println("invalid alphabet, please use 'A' - 'Z' or 'a' - 'z'")
+				continue
+			}
 
 			if !CheckValidAlphabet(rune(trimmedInput[0])) {
 				fmt.Println("invalid alphabet, please use 'A' - 'Z' or 'a' - 'z'")
