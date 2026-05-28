@@ -18,7 +18,7 @@ func OpenDictionary(filePath string) (*os.File, error) {
 }
 
 // return a slice of words whose length is between minLen and maxLen from the input file
-func GetMatchingWords(file *os.File, minLen, maxLen int) []string {
+func FilterWordsByLength(file *os.File, minLen, maxLen int) []string {
 	scanner := bufio.NewScanner(file)
 	var words []string
 
@@ -42,6 +42,7 @@ func GetRandomWord(words []string) string {
 	return words[rand.IntN(len(words))]
 }
 
+// display the first and last alphabet of a word, and hide others with a '_'
 func GetInitialWord(word string) string {
 	runes := []rune(word)
 	length := len(runes)
@@ -86,7 +87,7 @@ func main() {
 	}
 	defer file.Close()
 
-	word_list := GetMatchingWords(file, 3, 10)
+	word_list := FilterWordsByLength(file, 3, 10)
 	for {
 		chosenWord := GetRandomWord(word_list)
 		maxGuessCount := len(chosenWord)
