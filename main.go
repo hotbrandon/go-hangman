@@ -94,73 +94,82 @@ func playGame(wordList []string) {
 			fmt.Println("Error occurred while fetching a random word:", err)
 			return
 		}
-		const bonusTry = 2
-		maxGuessCount := len(randomWord) + bonusTry
-
-		fmt.Printf("%d letters, max try %d, enter a letter or 'quit' to exit.\n\n", len(randomWord), maxGuessCount)
-		guessedWord := maskLetters(randomWord)
-		guessedLetters := make(map[rune]bool)
-		reader := bufio.NewReader(os.Stdin)
-
-		for i := 0; i < maxGuessCount; i++ {
-			// print current word
-			fmt.Printf("word: %s\n", guessedWord)
-
-			// ask for input
-			fmt.Printf("You have %d tries left. guess a letter => ", maxGuessCount-i)
-
-			// read input
-			input, _ := reader.ReadString('\n')
-
-			// validate input
-			trimmedInput := strings.TrimSpace(input)
-
-			if len(trimmedInput) == 0 {
-				fmt.Println("invalid alphabet, please use 'A' - 'Z' or 'a' - 'z'")
-				continue
-			}
-
-			// compare input
-			if trimmedInput == "quit" {
-				return
-			}
-
-			if !CheckValidAlphabet(rune(trimmedInput[0])) {
-				fmt.Println("invalid alphabet, please use 'A' - 'Z' or 'a' - 'z'")
-				continue
-			}
-
-			guessedLetter := rune(trimmedInput[0])
-			if guessedLetters[guessedLetter] {
-				fmt.Printf("you have already guessed the letter %c.\n", guessedLetter)
-				continue
-			}
-
-			// push the new letter into guessed letters slice.
-			guessedLetters[guessedLetter] = true
-
-			// find the letter in randomWord, and return the position(s).
-			positions := findLetterPosition(rune(trimmedInput[0]), randomWord)
-			guessedWord = unmaskLetters(guessedWord, rune(trimmedInput[0]), positions)
-
-			// compare with the final answer
-			if guessedWord == randomWord {
-				fmt.Printf("Congratulations! You guessed the word: %s\n\n", randomWord)
-				break
-			}
-
-			fmt.Print("guessed letters => ")
-			for c := range guessedLetters {
-				fmt.Printf("%c ", c)
-			}
-			fmt.Println()
-			fmt.Println()
-
-			if i == maxGuessCount-1 {
-				fmt.Printf("Game over! The word was: %s\n\n", randomWord)
-			}
+		result := playRound(randomWord)
+		if !result {
+			break
 		}
 	}
+}
+
+// return false when user entered 'quit', or true to start another round
+func playRound(word string) bool {
+	const bonusTry = 2
+	maxGuessCount := len(word) + bonusTry
+	fmt.Printf("\n----------------------------------------------------\n")
+	fmt.Printf("%d letters, max try %d, enter a letter or 'quit' to exit.\n\n", len(word), maxGuessCount)
+	guessedWord := maskLetters(word)
+	guessedLetters := make(map[rune]bool)
+	reader := bufio.NewReader(os.Stdin)
+	for i := 0; i < maxGuessCount; i++ {
+		// print current word
+		fmt.Printf("word: %s\n", guessedWord)
+
+		// ask for input
+		fmt.Printf("You have %d tries left. guess a letter => ", maxGuessCount-i)
+
+		// read input
+		input, _ := reader.ReadString('\n')
+
+		// validate input
+		trimmedInput := strings.TrimSpace(input)
+
+		if len(trimmedInput) == 0 {
+			fmt.Println("invalid alphabet, please use 'A' - 'Z' or 'a' - 'z'")
+			continue
+		}
+
+		// compare input
+		if trimmedInput == "quit" {
+			return false
+		}
+
+		if !CheckValidAlphabet(rune(trimmedInput[0])) {
+			fmt.Println("invalid alphabet, please use 'A' - 'Z' or 'a' - 'z'")
+			continue
+		}
+
+		guessedLetter := rune(trimmedInput[0])
+		if guessedLetters[guessedLetter] {
+			fmt.Printf("you have already guessed the letter %c.\n", guessedLetter)
+			continue
+		}
+
+		// push the new letter into guessed letters slice.
+		guessedLetters[guessedLetter] = true
+
+		// find the letter in randomWord, and return the position(s).
+		positions := findLetterPosition(rune(trimmedInput[0]), word)
+		guessedWord = unmaskLetters(guessedWord, rune(trimmedInput[0]), positions)
+
+		// compare with the final answer
+		if guessedWord == word {
+			fmt.Printf("Congratulations! You guessed the word: %s\n\n", word)
+			break
+		}
+
+		fmt.Print("guessed letters => ")
+		for c := range guessedLetters {
+			fmt.Printf("%c ", c)
+		}
+		fmt.Println()
+		fmt.Println()
+
+		if i == maxGuessCount-1 {
+			fmt.Printf("Game over! The word was: %s\n\n", word)
+			return true
+		}
+	}
+	return true
 }
 
 func main() {
